@@ -1,0 +1,8 @@
+{
+	"command": ["ocamllsp"],
+	"env": {
+		"OCAMLLSP_SEMANTIC_HIGHLIGHTING": "full/delta"
+	},
+	"settings": {},
+	"selector": "source.reason | source.ocaml",
+}

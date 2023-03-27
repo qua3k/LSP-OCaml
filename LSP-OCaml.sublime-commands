@@ -1,0 +1,9 @@
+[
+  { "caption": "Preferences: sublime_ocaml",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/sublime_ocaml/sublime_ocaml.sublime-settings",
+      "default": "{\n\t$0\n}\n"
+    }
+  }
+]
