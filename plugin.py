@@ -86,8 +86,8 @@ class SwitchImplIntf(ExperimentalLsp):
 		full_path = parse_uri(uri)[1]
 		base_name = os.path.basename(full_path)
 		return (base_name, sublime.QuickPanelItem(
-            trigger=base_name,
-            details=full_path))
+			trigger=base_name,
+			details=full_path))
 
 	def handle_switch_async(self, uris: List[DocumentUri]) -> None:
 		window = self.view.window()
