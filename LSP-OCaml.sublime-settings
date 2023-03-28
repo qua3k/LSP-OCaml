@@ -1,6 +1,7 @@
 {
 	"command": ["ocamllsp"],
 	"env": {
+		// Incremental semantic highlighting support.
 		"OCAMLLSP_SEMANTIC_HIGHLIGHTING": "full/delta"
 	},
 	"settings": {},
