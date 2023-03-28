@@ -68,13 +68,14 @@ class SwitchImplIntf(ExperimentalLsp):
 		if option == -1:
 			return
 		window = self.window
-		opt = self.items[option]
-		current_path = os.getcwd() + opt
-		if os.path.exists(current_path) is False:
-			self.file_name = opt
+		selection = self.items[option]
+		base_path = selection.trigger
+		full_path = selection.details
+		if os.path.exists(full_path) is False:
+			self.file_name = base_path
 			self.handle_infer_intf(self.view)
 			return
-		view = window.open_file(self.items[option])
+		view = window.open_file(base_path)
 		view.assign_syntax("scope:source.ocaml")
 		sheets = window.selected_sheets()
 		sheet = view.sheet()
@@ -82,21 +83,20 @@ class SwitchImplIntf(ExperimentalLsp):
 			sheets.append(sheet)
 			window.select_sheets(sheets)
 
-	def to_quick_panel_item(self, uri: DocumentUri) -> Tuple[str, sublime.QuickPanelItem]:
+	def to_quick_panel_item(self, uri: DocumentUri) -> sublime.QuickPanelItem:
 		full_path = parse_uri(uri)[1]
 		base_name = os.path.basename(full_path)
-		return (base_name, sublime.QuickPanelItem(
+		return sublime.QuickPanelItem(
 			trigger=base_name,
-			details=full_path))
+			details=full_path)
 
 	def handle_switch_async(self, uris: List[DocumentUri]) -> None:
 		window = self.view.window()
 		if window is None:
 			return
 		self.window = window
-		tuple_list = [self.to_quick_panel_item(uri) for uri in uris]
-		self.items, quick_panel_items = zip(*tuple_list)
-		window.show_quick_panel(quick_panel_items, self.open_file)
+		self.items = [self.to_quick_panel_item(uri) for uri in uris]
+		window.show_quick_panel(self.items, self.open_file)
 
 	def run(self, edit: sublime.Edit) -> None:
 		session = self.best_session(self.session_prefix+"handleSwitchImplIntf")
