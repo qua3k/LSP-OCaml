@@ -125,7 +125,7 @@ class TypedHolesCommand(ExperimentalLsp):
         if not region_length:
             return
 
-        selected_region = regions[0 if previous else region_length-1]
+        selected_region = regions[region_length-1 if previous else 0]
         if previous == True:
             for region in regions:
                 if region.begin() > start:
@@ -154,6 +154,10 @@ class NextTypedHoleCommand(TypedHolesCommand):
     def run(self, edit: sublime.Edit) -> None:
         self.send_custom_async("ocamllsp/typedHoles", text_document_identifier(self.view),
             partial(self.jump_to_hole_async, False))
+
+# class WrappingAstNodeCommand(ExperimentalLsp):
+#   """ figure out how to properly incorporate this """
+#   capability = "experimental.ocamllsp.handleWrappingAstNode"
 
 def plugin_loaded():
     register_plugin(OcamlLspPlugin)
