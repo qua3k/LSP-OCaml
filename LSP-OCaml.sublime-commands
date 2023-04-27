@@ -3,7 +3,7 @@
     "caption": "Preferences: LSP-OCaml",
     "command": "edit_settings",
     "args": {
-      "base_file": "${packages}/LSP-OCaml/LSP-OCaml.sublime-settings",
+      "base_file": "${packages}/LSP-OCaml/OCaml.sublime-settings",
       "default": "{\n\t$0\n}\n"
     }
   },

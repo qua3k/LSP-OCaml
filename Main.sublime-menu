@@ -16,11 +16,11 @@
                 "id": "lsp-servers",
                 "children": [
                   {
-                    "caption": "LSP-OCaml",
+                    "caption": "OCaml",
                     "command": "edit_settings",
                     "args": {
-                      "base_file": "${packages}/LSP-OCaml/LSP-OCaml.sublime-settings",
-                      "default": "// Settings in here override those in \"LSP-OCaml/LSP-OCaml.sublime-settings\"\n\n{\n\t$0\n}\n",
+                      "base_file": "${packages}/LSP-OCaml/OCaml.sublime-settings",
+                      "default": "// Settings in here override those in \"LSP-OCaml/OCaml.sublime-settings\"\n\n{\n\t$0\n}\n",
                     }
                   }
                 ]
