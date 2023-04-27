@@ -103,7 +103,6 @@ class SwitchImplIntf(InferIntfCommand):
             self.uris = [to_quick_panel_item(uri) for uri in uris]
             window.show_quick_panel(self.items, self.open_file)
 
-
     def run(self, edit: sublime.Edit) -> None:
         self.send_custom_async("ocamllsp/switchImplIntf", [uri_from_view(self.view)],
             self.handle_switch_async)
