@@ -7,6 +7,8 @@
       "default": "{\n\t$0\n}\n"
     }
   },
-  { "caption": "(OCaml) Infer Interface", "command": "InferIntf" },
-  { "caption": "(OCaml) Switch Interface", "command": "SwitchImplIntf" }
+  { "caption": "LSP-OCaml: Infer Interface", "command": "InferIntf" },
+  { "caption": "LSP-OCaml: Switch Interface", "command": "SwitchImplIntf" },
+  { "caption": "LSP-OCaml: Jump to Previous Typed Hole", "command": "PreviousTypedHole" },
+  { "caption": "LSP-OCaml: Jump to Next Typed Hole", "command": "NextTypedHole" }
 ]
