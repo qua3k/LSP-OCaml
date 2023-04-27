@@ -18,6 +18,8 @@ from LSP.plugin.core.views import text_document_identifier, uri_from_view, range
 OCAML_SYNTAX = "scope:source.ocaml"
 
 class OcamlLspPlugin(AbstractPlugin):
+    package_name = "OCaml"
+
     @classmethod
     def name(cls) -> str:
         return "OCaml"
@@ -34,6 +36,11 @@ class ExperimentalLsp(LspTextCommand):
             session.send_request_async(Request(request, params), callback)
 
 class InferIntfCommand(ExperimentalLsp):
+    """ 
+        This is kind of convoluted; can we just get rid of the random member
+        variables and use partial function application?
+    """
+
     capability = "experimental.ocamllsp.handleInferIntf"
 
     def name(cls) -> str:
@@ -46,8 +53,7 @@ class InferIntfCommand(ExperimentalLsp):
             sheets.append(sheet)
             window.select_sheets(sheets)
 
-
-    def on_infer_int_async(self, result: Optional[str]) -> None:
+    def on_infer_int_async(self, base_path: str, result: Optional[str]) -> None:
         if result is None:
             return
         window = self.view.window()
@@ -57,19 +63,19 @@ class InferIntfCommand(ExperimentalLsp):
         view = window.new_file(flags=sublime.TRANSIENT)
         view.assign_syntax(OCAML_SYNTAX)
         view.set_scratch(False)
-        view.set_name(self.base_path)
+        view.set_name(base_path)
         view.run_command("append", {"characters": result})
         self.append_view_sheet(window, view)
 
-    def send_infer_async(self) -> None:
+    def send_infer_async(self, base_path: str) -> None:
         self.send_custom_async("ocamllsp/inferIntf", [uri_from_view(self.view)],
-            self.on_infer_int_async)
+            partial(self.on_infer_int_async, base_path))
 
     def run(self, edit: sublime.Edit) -> None:
         file_name = self.view.file_name()
         if file_name is not None:
-            self.base_path = "{}i".format(os.path.basename(file_name))
-            self.send_infer_async()
+            base_path = "{}i".format(os.path.basename(file_name))
+            self.send_infer_async(base_path)
 
 class SwitchImplIntf(InferIntfCommand):
     capability = "experimental.ocamllsp.handleSwitchImplIntf"
@@ -77,20 +83,20 @@ class SwitchImplIntf(InferIntfCommand):
     def name(cls) -> str:
         return "SwitchImplIntf"
 
-    def open_file(self, option: int) -> None:
+    def open_file(self, items: List[sublime.QuickPanelItem], option: int) -> None:
         if option == -1:
             return
-        selection = self.uris[option]
+        selection = items[option]
         full_path = selection.details
+        base_path = selection.trigger
         if not os.path.exists(full_path):
-            self.base_path = selection.trigger
-            return self.send_infer_async()
+            return self.send_infer_async(base_path)
         window = self.window
-        view = window.open_file(selection.trigger)
+        view = window.open_file(base_path)
         view.assign_syntax(OCAML_SYNTAX)
         self.append_view_sheet(window, view)
 
-    def to_quick_panel_item(uri: DocumentUri) -> sublime.QuickPanelItem:
+    def to_quick_panel_item(self, uri: DocumentUri) -> sublime.QuickPanelItem:
         full_path = parse_uri(uri)[1]
         base_path = os.path.basename(full_path)
         return sublime.QuickPanelItem(
@@ -100,8 +106,8 @@ class SwitchImplIntf(InferIntfCommand):
     def handle_switch_async(self, uris: List[DocumentUri]) -> None:
         window = self.view.window()
         if window is not None:
-            self.uris = [to_quick_panel_item(uri) for uri in uris]
-            window.show_quick_panel(self.items, self.open_file)
+            items = [self.to_quick_panel_item(uri) for uri in uris]
+            window.show_quick_panel(items, partial(self.open_file, items))
 
     def run(self, edit: sublime.Edit) -> None:
         self.send_custom_async("ocamllsp/switchImplIntf", [uri_from_view(self.view)],
